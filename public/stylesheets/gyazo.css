@@ -1,0 +1,17 @@
+a:link { color: #00a; }
+a:visited { color: #00a; }
+a { text-decoration: none; }
+a.keyword:link { color: #080; }
+a.keyword:visited { color: #080; }
+span.keyword { color: #040; }
+span.highlight {
+  color: #04f;
+  font-weight: bold;
+}
+li.faq {
+  font-size: 130%;
+  font-weight: bold;;
+}
+body {
+  background-image:url(https://gyazo.com/82d2ef8cdc24f49d33757d682781ce20.png);
+}

@@ -5,7 +5,7 @@ require 'json'
 
 def get(url)
   begin
-    uri = URI.parse(url)
+    uri = URI.parse(URI.escape(url)) # 何故かescape必要?
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -14,7 +14,7 @@ def get(url)
     return nil unless res
     return res.body
   rescue
-    return "Fail"
+    return nil
   end
 end
 
