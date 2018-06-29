@@ -7,4 +7,7 @@ run: compile
 	ruby expandhelp.rb
 
 compile:
-	browserify -c -t coffee-reactify public/javascripts/gyazo.cjsx > public/javascripts/gyazo.js
+	node_modules/.bin/browserify -c -t coffee-reactify public/javascripts/gyazo.cjsx > public/javascripts/gyazo.js
+
+server: compile
+	sudo apachectl restart

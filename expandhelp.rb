@@ -11,11 +11,42 @@ require 'get'
 
 require 'uri'
 
-get '/Gyazo' do
-  erb :gyazo
+get '/notification/:name' do |name|
+  File.open("/tmp/expandhelp_log",'a'){ |f|
+    f.puts name
+  }
+end
+
+#
+# Scrapbox notification (from Slack)
+# e.g. http://expandhelp.com/notification/SFCHelp
+#
+post '/notification/:name', provides: :json  do |name|
+  File.open("/tmp/expandhelp_log",'a'){ |f|
+    params = JSON.parse request.body.read
+    f.puts params
+  }
+  lockfile = "/tmp/helplock"
+  tmpdata = "/tmp/helpdata"
+  helpdata = "/home/masui/ExpandHelp/public/#{name}/helpdata.js"
+  if File.exist?(lockfile) then
+    system "killall gethelpdata"
+  end
+  system "touch #{lockfile}; ruby /home/masui/ScrapboxHelp/gethelpdata.rb #{name} > #{tmpdata}; /bin/mv #{tmpdata} #{helpdata}; /bin/rm #{lockfile}"
+  if File.exist?(tmpdata) && File.read(tmpdata).length != 0 then
+  end
 end
 
 get '/:name' do |name|
+  redirect to "/#{name}/index.html"
+end
+
+get '/:name/' do |name|
+  redirect to "/#{name}/index.html"
+end
+
+# get '/:name' do |name|
+get '/xxxxx/:name' do |name|
   puts "GET name=#{name}"
   #
   # Glossaryの定義を取得

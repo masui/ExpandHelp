@@ -22,8 +22,11 @@ get("https://scrapbox.io/api/pages/#{name}/glossary/text").split(/\n/).each { |l
     s = $2
     while s =~ /^(.*)\[([^\]]+)\](.*)$/
       ss = $2
-      keywords[ss] = true
-      ss = defs[ss] if defs[ss]
+      if defs[ss]
+        ss = defs[ss]
+      else
+        keywords[ss] = true
+      end
       s = "#{$1}#{ss}#{$3}"
     end
     defs[k] = s
@@ -43,13 +46,16 @@ s['pages'].each { |page|
       desc = $1
       while desc =~ /^(.*)\[([^\]]+)\](.*)$/
         ss = $2
-        keywords[ss] = true
-        ss = defs[ss] if defs[ss]
+        if defs[ss]
+          ss = defs[ss]
+        else
+          keywords[ss] = true
+        end
         desc = "#{$1}#{ss}#{$3}"
       end
       while desc =~ /^(.*)#(\w+)(.*)$/
         ss = $2
-        keywords[ss] = true
+        # keywords[ss] = true
         ss = defs[ss] if defs[ss]
         desc = "#{$1}#{ss}#{$3}"
       end
@@ -70,23 +76,33 @@ class String
   end
 end
 
-puts "keywords = [];"
+puts "keywords = ["
 
-keywords.keys.map { |key|
+keywordlist = keywords.keys.map { |key|
   key.dup.force_encoding("utf-8")
 }.sort { |a,b|
   a.yomi <=> b.yomi
-}.each { |keyword|
-  puts "keywords.push('#{keyword}');"
 }
+keywordlist.each_with_index { |keyword,ind|
+  print "  '#{keyword}'"
+  print "," if ind < keywordlist.length-1
+  print "\n"
+}
+puts "];"
 
 require "re_expand"
 
-puts "entries = [];"
-
+out = []
 entries.each { |entry|
   entry[0].expand.each { |s|
-    puts "entries.push({ title:'#{s}', url:'https://scrapbox.io/Gyazo/#{entry[1]}'});"
+    out << [s, "https://scrapbox.io/Gyazo/#{entry[1]}"]
   }
 }
+puts "faqs = ["
+out.each_with_index { |entry,ind|
+  print "  { title:'#{entry[0]}', url:'#{entry[1]}'}"
+  print "," if ind < out.length-1
+  print "\n"
+}
+puts "];"
 
